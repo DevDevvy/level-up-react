@@ -8,7 +8,9 @@ export const NavBar = () => {
     return (
         <ul className="navbar">
             <li className="navbar__item">
-                Navigation link
+                <Link to="/events">
+                Event List
+                </Link>
             </li>
             <li className="navbar__item">
                 Navigation link
