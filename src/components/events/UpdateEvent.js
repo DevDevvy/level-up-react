@@ -1,44 +1,39 @@
 
 import React, { useState, useEffect } from "react"
-import { useHistory } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import { getGames } from "../game/GameManager.js"
-import { createEvent } from "./EventManager.js"
+import { editEvent, getSingleEvent } from "./EventManager.js"
 
 
-export const EventForm = () => {
+export const UpdateEvent = () => {
     const history = useHistory()
+    const [event, setEvent] = useState({})
     const [games, setGames] = useState([])
+    const eventId = useParams()
 
-    /*
-        Since the input fields are bound to the values of
-        the properties of this state variable, you need to
-        provide some default values.
-    */
-    const [newEvent, setNewEvent] = useState({
-        description: "",
-        game_date: "",
-        time: "",
-        game_id: ""
-    })
+    useEffect(() => {
+        getSingleEvent(eventId.eventId)
+        .then(data => setEvent(data))
+    }, [])
+
     useEffect(() => {
         getGames()
         .then(data => setGames(data))
     }, [])
-
     const changeEventState = (domEvent) => {
-        const newEventObject = Object.assign({}, newEvent)
+        const newEventObject = Object.assign({}, event)
         newEventObject[domEvent.target.name] = domEvent.target.value
-        setNewEvent(newEventObject)
+        setEvent(newEventObject)
     }
 
     return (
         <form className="eventForm">
-            <h2 className="gameForm__title">Register New Event</h2>
+            <h2 className="gameForm__title">Edit Event</h2>
             <fieldset>
                 <div className="form-group">
                     <label htmlFor="description">Description: </label>
                     <input type="text" name="description" required autoFocus className="form-control"
-                        value={newEvent.description}
+                        value={event.description}
                         onChange={changeEventState}
                     />
                 </div>
@@ -47,7 +42,7 @@ export const EventForm = () => {
                 <div className="form-group">
                     <label htmlFor="game_date">Game Date: </label>
                     <input type="text" name="game_date" required className="form-control"
-                        value={newEvent.game_date}
+                        value={event.game_date}
                         onChange={changeEventState}
                     />
                 </div>
@@ -56,7 +51,7 @@ export const EventForm = () => {
                 <div className="form-group">
                     <label htmlFor="time">Time: </label>
                     <input type="text" name="time" required className="form-control"
-                        value={newEvent.time}
+                        value={event.time}
                         onChange={changeEventState}
                     />
                 </div>
@@ -64,7 +59,7 @@ export const EventForm = () => {
             <fieldset>
                 <div className="form-group">
                     <select name="game_id" required className="form-control"
-                        value={newEvent.game_id}
+                        value={event.game?.id}
                         placeholder="Select Game Type..."
                         onChange={changeEventState}>
                             <option value="0">Choose a Game!</option>
@@ -81,18 +76,19 @@ export const EventForm = () => {
                     // Prevent form from being submitted
                     evt.preventDefault()
 
-                    const event = {
-                        description: newEvent.description,
-                        game_date: newEvent.game_date,
-                        time: newEvent.time,
-                        game: parseInt(newEvent.game_id)
+                    const editedEvent = {
+                        id: event.id,
+                        description: event.description,
+                        game_date: event.game_date,
+                        time: event.time,
+                        game: parseInt(event.game.id)
                     }
 
                     // Send POST request to your API
-                    createEvent(event)
-                        .then(() => history.push("/events"))
+                    editEvent(editedEvent)
+                        .then(() => history.push(`/events/${eventId.eventId}`))
                 }}
-                className="btn btn-primary">Create</button>
+                className="btn btn-primary">Save</button>
         </form>
     )
 }

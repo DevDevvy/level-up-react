@@ -9,7 +9,12 @@ export const NavBar = () => {
         <ul className="navbar">
             <li className="navbar__item">
                 <Link to="/events">
-                Event List
+                    Event List
+                </Link>
+            </li>
+            <li className="navbar__item">
+                <Link  to="/games">
+                    Games
                 </Link>
             </li>
             <li className="navbar__item">

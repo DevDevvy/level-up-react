@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from "react"
-import { useHistory } from 'react-router-dom'
-import { createGame, getGameTypes } from './GameManager.js'
+import { useHistory, useParams } from 'react-router-dom'
+import { editGame, getGameTypes, getSingleGame } from "./GameManager.js"
 
 
-export const GameForm = () => {
+
+export const GameEdit = () => {
     const history = useHistory()
-    const [gameTypes, setGameTypes] = useState([])
     
-    /*
-        Since the input fields are bound to the values of
-        the properties of this state variable, you need to
-        provide some default values.
-    */
-    const [currentGame, setCurrentGame] = useState({
-        title: "",
-        maker: "",
-        number_of_players: 0,
-        skill_level: 1,
-        game_type_id: 0
-    })
+    const [gameTypes, setGameTypes] = useState([])
+    // set up found games state with original data
+    const [currentGame, setCurrentGame] = useState({})
+    const gameId = useParams()
+// get single game
+    useEffect(() => {
+        getSingleGame(gameId.gameId)
+        .then(data => setCurrentGame(data))
+    }, [])
 
     useEffect(() => {
         getGameTypes()
@@ -33,7 +30,7 @@ export const GameForm = () => {
 
     return (
         <form className="gameForm">
-            <h2 className="gameForm__title">Register New Game</h2>
+            <h2 className="gameForm__title">Edit Game</h2>
             <fieldset>
                 <div className="form-group">
                     <label htmlFor="title">Title: </label>
@@ -76,9 +73,8 @@ export const GameForm = () => {
                         value={currentGame.game_type_id}
                         placeholder="Select Game Type..."
                         onChange={changeGameState}>
-                            <option value="0">Choose Type...</option>
                             {
-                                gameTypes.map((type, index) => {
+                                gameTypes?.map((type, index) => {
                                     return <option key={index} value={type.id} name="game_type_id">{type.label}</option>
                                 })
                             }
@@ -91,18 +87,19 @@ export const GameForm = () => {
                     evt.preventDefault()
 
                     const game = {
+                        id: currentGame.id,
                         title: currentGame.title,
                         maker: currentGame.maker,
                         number_of_players: parseInt(currentGame.number_of_players),
                         skill_level: parseInt(currentGame.skill_level),
-                        game_type: parseInt(currentGame.game_type_id)
+                        game_type: parseInt(currentGame.game_type.id)
                     }
 
                     // Send POST request to your API
-                    createGame(game)
-                        .then(() => history.push("/games"))
+                    editGame(game)
+                        .then(() => history.push(`/games/${gameId.gameId}`))
                 }}
-                className="btn btn-primary">Create</button>
+                className="btn btn-primary">Save</button>
         </form>
     )
 }

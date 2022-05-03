@@ -1,14 +1,31 @@
 import React, { useEffect, useState } from "react"
-import { useHistory } from "react-router-dom"
-import { getEvents } from "./EventManager"
+import { Link, useHistory } from "react-router-dom"
+import { deleteEvent, getEvents, joinEvent, leaveEvent } from "./EventManager"
 
 
 export const EventList = (props) => {
     const [ events, setEvents ] = useState([])
     const history = useHistory()
+    
     useEffect(() => {
         getEvents().then(data => setEvents(data))
     }, [])
+
+    const deleteButton = (id) => {
+        deleteEvent(id)
+        .then(getEvents).then(data => setEvents(data))
+    }
+
+    const JoinButton = (id) => {
+        return <button onClick={()=> joinEvent(id)
+            .then(getEvents).then(data => setEvents(data))
+        }>JOIN</button>
+    }
+    const LeaveButton = (id) => {
+        return <button onClick={()=> leaveEvent(id)
+        .then(getEvents).then(data => setEvents(data))
+        }>LEAVE</button>
+    }
 
     return (
         <article className="events">
@@ -22,16 +39,28 @@ export const EventList = (props) => {
             <h3>Event List:</h3>
             {
                 events.map(event => {
-                    return <section key={`event--${event.id}`} className="event">
-                        <br></br>
+                    return <table key={`event--${event.id}`} className="event">
                         
-                        <div className="event__description">{event.description} by {event.organizer.user.username}</div>
-                        <div className="event__game">{event.game.title} will be played. It is a {event.game.game_type.label}</div>
-                        <div className="event__players">{event.game.number_of_players} players needed</div>
-                        <div className="event__time">Event time: {event.time} on {event.date}</div>
-                        <div className="event__skillLevel">Skill level is {event.game.skill_level}</div>
-                        <br></br>
-                    </section>
+                        <tbody>
+                            <tr>
+                                {/* join/leave buttons for events */}
+                                <td>{event.joined ? LeaveButton(event.id) : JoinButton(event.id)} </td>
+                                <td className="event__description">
+                                    <Link to={`events/${event.id}`}>{event.description} </Link>
+                                    by {event.organizer.user.username} </td>
+                                <td className="event__game">{event.game.title} will be played. 
+                                    It is a {event.game.game_type.label}</td>
+                                <td className="event__players">{event.game.number_of_players} players needed</td>
+                                <td className="event__time">Event time: {event.time} on {event.game_date}</td>
+                                <td className="event__skillLevel">Skill level is {event.game.skill_level}</td>
+                                {/* edit */}
+                                <td><Link to={`/events/edit/${event.id}`}><button class="button">EDIT</button></Link></td>
+                                {/* delete */}
+                                <td><button onClick={()=>deleteButton(event.id)}>DELETE</button></td>
+                            </tr>
+                        </tbody>
+                        
+                    </table>
                     
                 })
             }
