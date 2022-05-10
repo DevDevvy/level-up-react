@@ -46,8 +46,8 @@ export const GameList = (props) => {
                             <td className="game__title"><Link to={`/games/${game.id}`}><h3>{game.title}</h3></Link> by {game.maker}</td>
                             <td className="game__players">{game.number_of_players}</td>
                             <td className="game__skillLevel">{game.skill_level}</td>
-                            <td><Link to={`/edit/${game.id}`}>EDIT</Link></td>
-                            <td><button onClick={()=>deleteButton(game.id)}>DELETE</button></td>
+                            <td><Link to={`/edit/${game.id}`} className="btn btn-1">EDIT</Link></td>
+                            <td><button className="btn btn-3" onClick={()=>deleteButton(game.id)}>DELETE</button></td>
                         </tr>
                     </tbody>
                 })

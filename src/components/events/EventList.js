@@ -46,7 +46,7 @@ export const EventList = (props) => {
                                 {/* join/leave buttons for events */}
                                 <td>{event.joined ? LeaveButton(event.id) : JoinButton(event.id)} </td>
                                 <td className="event__description">
-                                    <Link to={`events/${event.id}`}>{event.description} </Link>
+                                    <h3><Link to={`events/${event.id}`}>{event.description} </Link></h3>
                                     by {event.organizer.user.username} </td>
                                 <td className="event__game">{event.game.title} will be played. 
                                     It is a {event.game.game_type.label}</td>
@@ -56,7 +56,7 @@ export const EventList = (props) => {
                                 {/* edit */}
                                 <td><Link to={`/events/edit/${event.id}`}><button class="button">EDIT</button></Link></td>
                                 {/* delete */}
-                                <td><button onClick={()=>deleteButton(event.id)}>DELETE</button></td>
+                                <td><button className="btn-3" onClick={()=>deleteButton(event.id)}>DELETE</button></td>
                             </tr>
                         </tbody>
                         
